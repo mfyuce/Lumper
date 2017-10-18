@@ -100,9 +100,9 @@ foreach my $issue (sort { $a->{numberInProject} <=> $b->{numberInProject} } @{$e
 	$header .= scalar localtime ($issue->{created}/1000);
 	$header .= "]\n";
 	my %import = ( project => { key => $JiraProject },
-	               issuetype => { name => $Type{$issue->{Type}} || $issue->{Type} },
+	               issuetype => { name => $Type{$issue->{Type}} || $issue->{Type} || "Task" },
                    assignee => { name => $User{$issue->{Assignee}} || $issue->{Assignee} },
-                   reporter => { name => $User{$issue->{reporterName}} || $issue->{reporterName} },
+                   # reporter => { name => $User{$issue->{reporterName}} || $issue->{reporterName} },
                    summary => $issue->{summary},
                    description => $header.$issue->{description},
                    priority => { name => $Priority{$issue->{Priority}} || $issue->{Priority} || 'Medium' },
@@ -141,6 +141,13 @@ foreach my $issue (sort { $a->{numberInProject} <=> $b->{numberInProject} } @{$e
 	}
 
 	# Transition
+
+	if ($Status{$issue->{Stage}}) {
+		print "\nChanging status to ".$Status{$issue->{Stage}}."\n";
+		unless ($jira->doTransition(Key => $key, Status => $Status{$issue->{Stage}})) {
+			die "Failed doing transition";
+		}
+	}
 	if ($Status{$issue->{State}}) {
 		print "\nChanging status to ".$Status{$issue->{State}}."\n";
 		unless ($jira->doTransition(Key => $key, Status => $Status{$issue->{State}})) {
@@ -149,13 +156,20 @@ foreach my $issue (sort { $a->{numberInProject} <=> $b->{numberInProject} } @{$e
 	}
 
 	# Resolution
-	if ($StatusToResolution{$issue->{State}}) {
-		print "\nChanging resolution to ".$StatusToResolution{$issue->{State}}."\n";
-		unless ($jira->changeFields(Key => $key, Fields => { 'Resolution' => $StatusToResolution{$issue->{State}} } )) {
-			die "Failed updating fields"
-		}
-	}
+	# if ($StatusToResolution{$issue->{Stage}}) {
+	# 	print "\nChanging resolution to ".$StatusToResolution{$issue->{Stage}}."\n";
+	# 	unless ($jira->changeFields(Key => $key, Fields => { 'Resolution' => $StatusToResolution{$issue->{Stage}} } )) {
+	# 		die "Failed updating fields"
+	# 	}
+	# }
 
+	# Resolution
+	# if ($StatusToResolution{$issue->{State}}) {
+	# 	print "\nChanging resolution to ".$StatusToResolution{$issue->{State}}."\n";
+	# 	unless ($jira->changeFields(Key => $key, Fields => { 'Resolution' => $StatusToResolution{$issue->{State}} } )) {
+	# 		die "Failed updating fields"
+	# 	}
+	# }
 
 	# Create comments
 	print "\nCreating comments\n";

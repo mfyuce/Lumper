@@ -1,15 +1,15 @@
 
 our $YTUrl='http://mycompany.myjetbrains.com/youtrack';
-our $YTlogin='mylogin';
+our $YTlogin='mylogin@yourcompany.com';
 our $YTpassword='mypass';
 # Url and credentials to access Jira
 our $JiraUrl='https://mycompany.atlassian.net';
 our $JiraLogin='mylogin';
 our $JiraPassword='mypass';
 # The project to migrate from
-our $YTProject='KEY';
+our $YTProject='FROM_SHORT_PROJECT_KEY';
 # The project to migrate to
-our $JiraProject='KEY';
+our $JiraProject='TO_SHORT_PROJECT_KEY';
 
 # Export tags from YT and import them as labels in Jira
 our $exportTags='true';
@@ -18,14 +18,16 @@ our $exportAttachments='true';
 our $exportLinks='true';
 
 # Lumper will keep the issue keys identical in YT and Jira if YT has no gaps larger than this value
+# Be sure giving delete permission to your account
 our $maximumKeyGap=100;
 
 # Issue type mapping
 our %Type = (
 	'Bug' => 'Bug',
 	'Task' => 'Task',
+	'Cosmetics' => 'Task',
 	'Exception' => 'Bug',
-	'Feature' => 'New Feature',
+	'Feature' => 'Task',
 	'Usability Problem' => 'Bug',
 	'Epic' => 'Task',
 	'Performance Problem' => 'Bug'
@@ -45,29 +47,64 @@ our %Priority = (
 # From Jira side there should be Transitions (not Statuses) and all Transitions should be available from the initial state
 our %Status = (
 	"In Progress" => "In Progress",
-	"Can't Reproduce" => "Rejected",
-	"Duplicate" => "Rejected",
+	"Can't Reproduce" => "Done",
+	"Duplicate" => "Done",
 	"Fixed" => "Done",
-	"Won't fix" => "Rejected",
-	"Incomplete" => "Rejected",
-	"Obsolete" => "Rejected",
-	"Verified" => "Verified",
-	"On Hold" => "On Hold",
-	"To Plan" => "To Plan",
+	"Won't fix" => "Done",
+	"Incomplete" => "Done",
+	"Obsolete" => "Done",
+	"Verified" => "To Do",
+	"On Hold" => "To Do",
+	"To Plan" => "To Do",
+	"Submitted" => "To Do",
+	"Open" => "To Do",
+	"To be discussed" => "To Do",
+	"Reopened" => "To Do",
 	"Done" => "Done",
-	"Approved to go live" => "Approved to go live"
+	"Approved to go live" => "To Do",
+	"Won't fix" => "Done"
 );
 
 # Some statuses in YT can be mapped to Resolutions in Jira
 # In order to use this feature a field Resolution should be added to screens (and removed after the migration if not needed)
 our %StatusToResolution = (
-	"Can't Reproduce" => "Cannot Reproduce",
-	"Duplicate" => "Duplicate",
-	"Obsolete" => "Obsolete",
-	"Incomplete" => "Won't Do",
-	"Won't fix" => "Won't Do"
+	"In Progress" => "In Progress",
+	"Can't Reproduce" => "Done",
+	"Duplicate" => "Done",
+	"Fixed" => "Done",
+	"Won't fix" => "Done",
+	"Incomplete" => "Done",
+	"Obsolete" => "Done",
+	"Verified" => "To Do",
+	"On Hold" => "To Do",
+	"To Plan" => "To Do",
+	"Submitted" => "To Do",
+	"Open" => "To Do",
+	"To be discussed" => "To Do",
+	"Reopened" => "To Do",
+	"Done" => "Done",
+	"Approved to go live" => "To Do",
+	"Won't fix" => "Done"
 );
-
+our %StatusToResolution = (
+	"In Progress" => "Unresolved",
+	"Can't Reproduce" => "Done",
+	"Duplicate" => "Done",
+	"Fixed" => "Done",
+	"Won't fix" => "Done",
+	"Incomplete" => "Done",
+	"Obsolete" => "Done",
+	"Verified" => "Unresolved",
+	"On Hold" => "Unresolved",
+	"To Plan" => "Unresolved",
+	"Submitted" => "Unresolved",
+	"Open" => "Unresolved",
+	"To be discussed" => "Unresolved",
+	"Reopened" => "Unresolved",
+	"Done" => "Done",
+	"Approved to go live" => "Unresolved",
+	"Won't fix" => "Done"
+);
 # Custom fields mapping
 our %CustomFields = (
 	"Found in Version" => "Affects Version/s",

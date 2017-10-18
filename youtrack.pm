@@ -53,11 +53,11 @@ sub getAttachments {
 		my @downloadedFiles;
 		foreach (@{$data}) {
 			my $r = $ua->get($_->{url}, Cookie => $self->{cookie});
-			open F, ">/tmp/".$_->{name} or die "$! $_->{name}";
+			open F, ">./tmp/".$_->{name} or die "$! $_->{name}";
 			binmode F;
 			print F $r->content;
 			close F;
-			push @downloadedFiles, '/tmp/'.$_->{name};
+			push @downloadedFiles, './tmp/'.$_->{name};
 		}
 		return \@downloadedFiles;
 	} else {
@@ -126,7 +126,7 @@ sub getIssue {
 sub exportIssues {
 	my $self = shift;
 	my %arg = @_;
-	my $max = $arg{Max} || 10000;
+	my $max = $arg{Max} || 10000000;
 	print $self->{url}.'/rest/export/'.$arg{Project}.'/issues?max='.$max."\n";
 	my $response = $ua->get($self->{url}.'/rest/export/'.$arg{Project}.'/issues?max='.$max, Cookie => $self->{cookie});
 	if ($response->is_success) {
